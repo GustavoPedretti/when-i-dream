@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>When I Dream - Deck Digital, Personagens & Regras</title>
+  <meta name="description" content="Aplicativo de apoio completo para o jogo When I Dream. Sorteador de personagens, baralho com rotação, cronômetro e regras oníricas.">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌙</text></svg>">
+</head>
+<body>
+  <!-- Starry Background Animation -->
+  <div id="stars-container" class="stars-bg"></div>
+
+  <div id="app">
+    <!-- Header with Navigation -->
+    <header class="app-header">
+      <div class="logo-container" id="logo-home-btn" style="cursor: pointer;">
+        <span class="logo-icon">🌙</span>
+        <span class="logo-title">WHEN I DREAM</span>
+      </div>
+
+      <!-- Navigation Tabs -->
+      <nav class="app-nav">
+        <button id="nav-btn-game" class="nav-tab-btn active" data-tab="GAME">
+          <span class="nav-tab-icon">🌙</span>
+          <span class="nav-tab-text">Sonho</span>
+        </button>
+        <button id="nav-btn-roles" class="nav-tab-btn" data-tab="ROLES">
+          <span class="nav-tab-icon">🎭</span>
+          <span class="nav-tab-text">Personagens</span>
+        </button>
+        <button id="nav-btn-rules" class="nav-tab-btn" data-tab="RULES">
+          <span class="nav-tab-icon">📖</span>
+          <span class="nav-tab-text">Regras Oníricas</span>
+        </button>
+      </nav>
+
+      <div class="header-actions">
+        <button id="btn-sound-toggle" class="btn btn-icon-only" title="Silenciar / Ativar Sons (M)">🔊</button>
+        <button id="btn-fullscreen-toggle" class="btn btn-icon-only" title="Tela Cheia (F)">⛶</button>
+      </div>
+    </header>
+
+    <!-- =========================================================================
+         SCREEN 1: LOBBY / SETUP (Tab: GAME)
+         ========================================================================= -->
+    <main id="screen-lobby" class="screen active">
+      <div class="lobby-card">
+        <div class="hero-banner">
+          <h1>Preparação do Sonho</h1>
+          <p>Escolha a duração da rodada e prepare o Sonhador para fechar os olhos!</p>
+        </div>
+
+        <!-- Quick Roles Banner Shortcut -->
+        <div class="quick-roles-banner">
+          <div class="quick-roles-info">
+            <span style="font-size: 1.6rem;">🎭</span>
+            <div>
+              <strong>Sorteio Secreto de Espíritos</strong>
+              <div style="font-size: 0.85rem; color: var(--text-secondary);">Sortear Fadas, Bichos-Papões, Sandman e Sonhador</div>
+            </div>
+          </div>
+          <button id="btn-goto-roles" class="btn btn-primary">Configurar Personagens</button>
+        </div>
+
+        <!-- Timer Duration Config -->
+        <div class="settings-section">
+          <label class="section-label">⏱️ Duração da Rodada (Cronômetro)</label>
+          <div class="timer-preset-grid">
+            <button class="preset-btn" data-time="60">
+              <span class="time-val">1:00</span>
+              <span class="time-desc">Rápido (60s)</span>
+            </button>
+            <button class="preset-btn" data-time="90">
+              <span class="time-val">1:30</span>
+              <span class="time-desc">Médio (90s)</span>
+            </button>
+            <button class="preset-btn active" data-time="120">
+              <span class="time-val">2:00</span>
+              <span class="time-desc">Oficial (120s)</span>
+            </button>
+            <button class="preset-btn" data-time="180">
+              <span class="time-val">3:00</span>
+              <span class="time-desc">Longo (180s)</span>
+            </button>
+          </div>
+
+          <!-- Custom Time Slider -->
+          <div class="custom-time-row">
+            <span>Tempo Personalizado:</span>
+            <div class="custom-slider-container">
+              <input type="range" id="custom-time-slider" class="custom-slider" min="15" max="300" step="5" value="120">
+              <span id="custom-time-display" class="custom-time-display">2:00</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Deck Overview -->
+        <div class="deck-info-card">
+          <div class="deck-stats">
+            <span style="font-size: 1.8rem;">🃏</span>
+            <div>
+              <div class="deck-count"><span id="deck-total-count">215</span> Cartas</div>
+              <div class="deck-label">Baralho completo com rotação dinâmica (0° ou 180°)</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Start Action -->
+        <div class="start-action-container">
+          <button id="btn-start-dream" class="btn btn-success btn-large btn-start-dream">
+            ✨ Iniciar Sonho <span class="btn-badge">Espaço</span>
+          </button>
+        </div>
+      </div>
+    </main>
+
+    <!-- =========================================================================
+         SCREEN 2: ACTIVE GAME ROUND (Tab: GAME)
+         ========================================================================= -->
+    <main id="screen-game" class="screen">
+      <!-- Left Sidebar: Timer & Controls -->
+      <aside class="game-sidebar-left">
+        <div id="timer-box" class="timer-box">
+          <div class="timer-header">Tempo Restante</div>
+          
+          <div class="timer-circle-wrapper">
+            <svg class="timer-svg" viewBox="0 0 200 200">
+              <circle class="timer-bg-circle" cx="100" cy="100" r="90" />
+              <circle id="timer-progress-circle" class="timer-progress-circle" cx="100" cy="100" r="90" />
+            </svg>
+            <div class="timer-text-overlay">
+              <span id="timer-digits" class="timer-digits">02:00</span>
+              <span id="timer-status-badge" class="timer-status-badge">✨ Sonhando...</span>
+            </div>
+          </div>
+
+          <div class="timer-controls">
+            <button id="btn-pause-timer" class="btn btn-primary">
+              ⏸️ Pausar <span class="btn-badge">P</span>
+            </button>
+            <button id="btn-end-round" class="btn btn-danger" title="Encerrar Sonho antes do tempo">
+              ⏹️ Encerrar
+            </button>
+          </div>
+        </div>
+
+        <!-- Stats Box -->
+        <div class="round-info-box">
+          <div class="round-stat-row">
+            <span class="round-stat-label">✅ Acertos (Sonho):</span>
+            <span id="round-correct-count" class="round-stat-value" style="color: var(--accent-green);">0</span>
+          </div>
+          <div class="round-stat-row">
+            <span class="round-stat-label">❌ Erros (Pesadelo):</span>
+            <span id="round-incorrect-count" class="round-stat-value" style="color: var(--accent-danger);">0</span>
+          </div>
+          <div class="round-stat-row">
+            <span class="round-stat-label">Total neste Sonho:</span>
+            <span id="round-card-count" class="round-stat-value">0</span>
+          </div>
+          <div class="round-stat-row">
+            <span class="round-stat-label">Restantes no Baralho:</span>
+            <span id="deck-remaining-count" class="round-stat-value">215</span>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Center Stage: Active Card -->
+      <section class="game-stage-center">
+        <div class="card-stage-container">
+          <!-- Card Frame -->
+          <div id="card-frame" class="card-frame rot-0">
+            <img id="card-image" class="card-image" src="" alt="Carta do Sonho">
+          </div>
+        </div>
+
+        <!-- Stage Action Buttons: Directional Gaming Controls -->
+        <div class="stage-actions stage-directional-controls">
+          <button id="btn-card-incorrect" class="btn btn-action-incorrect" title="Errou ou Passou (Tecla A ou Seta Esquerda)">
+            <span class="dir-icon">⬅️</span>
+            <span class="dir-text">Errou / Passou</span>
+            <span class="btn-badge">A / 🠔</span>
+          </button>
+
+          <button id="btn-card-correct" class="btn btn-action-correct" title="Acertou (Tecla D ou Seta Direita)">
+            <span class="dir-text">Acertou</span>
+            <span class="dir-icon">➡️</span>
+            <span class="btn-badge">D / 🠖</span>
+          </button>
+        </div>
+      </section>
+
+      <!-- Right Sidebar: Live Round History -->
+      <aside class="game-sidebar-right">
+        <div class="history-header">
+          <span class="history-title">📜 Histórico do Round</span>
+          <span id="history-count-badge" class="history-badge">0</span>
+        </div>
+
+        <div id="history-list" class="history-list">
+          <!-- Populated dynamically via JS -->
+        </div>
+      </aside>
+    </main>
+
+    <!-- =========================================================================
+         SCREEN 3: ROUND SUMMARY (Tab: GAME)
+         ========================================================================= -->
+    <main id="screen-summary" class="screen">
+      <div class="summary-header-card">
+        <h2 class="summary-title">✨ O Sonho Terminou! ✨</h2>
+        <p class="summary-subtitle">
+          O Sonhador agora deve recordar o sonho e contar a sua história em voz alta, usando as palavras das cartas na ordem em que foram sonhadas!
+        </p>
+        <p class="summary-hint">
+          💡 <em>Clique nas cartas abaixo para marcar as que foram acertadas ou mencionadas na narrativa.</em>
+        </p>
+
+        <div class="summary-stats-bar">
+          <div class="stat-pill stat-correct">
+            ✅ Acertos: <strong id="summary-correct-cards" style="color: var(--accent-green);">0</strong>
+          </div>
+          <div class="stat-pill stat-incorrect">
+            ❌ Erros: <strong id="summary-incorrect-cards" style="color: var(--accent-danger);">0</strong>
+          </div>
+          <div class="stat-pill">
+            Total: <strong id="summary-total-cards">0</strong>
+          </div>
+          <div class="stat-pill">
+            Marcadas: <strong id="summary-selected-cards" style="color: var(--accent-gold);">0</strong>
+          </div>
+          <div class="stat-pill">
+            Duração: <strong id="summary-duration">2m 00s</strong>
+          </div>
+        </div>
+      </div>
+
+      <div class="summary-gallery-container">
+        <div class="gallery-title">
+          <span>🌌</span> Cartas Sorteadas na Rodada (Ordem Cronológica)
+        </div>
+        
+        <div id="summary-gallery" class="gallery-grid">
+          <!-- Populated dynamically via JS -->
+        </div>
+      </div>
+
+      <div class="summary-actions">
+        <button id="btn-new-round" class="btn btn-success btn-large">
+          🌙 Iniciar Novo Sonho <span class="btn-badge">Espaço</span>
+        </button>
+        <button id="btn-back-to-lobby" class="btn btn-primary btn-large">
+          ⚙️ Ajustar Configurações
+        </button>
+      </div>
+    </main>
+
+    <!-- =========================================================================
+         SCREEN 4: PERSONAGENS & DISTRIBUIÇÃO SECRETA (Tab: ROLES)
+         ========================================================================= -->
+    <main id="screen-roles" class="screen">
+      <div class="roles-container">
+        <!-- Setup Header -->
+        <div class="roles-header-card">
+          <h2 class="roles-title">🎭 Espíritos & Personagens da Noite</h2>
+          <p class="roles-subtitle">
+            Cadastre os jogadores da partida (4 a 10 jogadores). O sistema aplicará a tabela oficial de distribuição de papéis secretos entre <strong>Fadas, Bichos-Papões, Sandman</strong> e o <strong>Sonhador</strong>.
+          </p>
+        </div>
+
+        <!-- Player Input Card -->
+        <div class="roles-setup-card">
+          <div class="setup-row">
+            <div class="player-input-wrap">
+              <input type="text" id="player-name-input" class="player-input" placeholder="Digite o nome do jogador..." maxlength="22">
+              <button id="btn-add-player" class="btn btn-primary">➕ Adicionar</button>
+            </div>
+            <div class="player-count-pill">
+              <span id="player-count-badge">0</span> Jogadores
+            </div>
+          </div>
+
+          <!-- Player Chips List -->
+          <div id="player-chips-list" class="player-chips-list">
+            <!-- Chips injected via JS -->
+          </div>
+
+          <!-- Official Distribution Preview Box -->
+          <div class="roles-distribution-preview" id="roles-distribution-preview">
+            <!-- Injected via JS based on player count -->
+          </div>
+
+          <!-- Sonhador Selector & Deal Button -->
+          <div class="roles-deal-controls">
+            <div class="sonhador-select-group">
+              <label for="select-sonhador" style="font-size: 0.9rem; color: var(--text-secondary);">Quem será o Sonhador?</label>
+              <select id="select-sonhador" class="sonhador-dropdown">
+                <option value="RANDOM">🎲 Sortear Aleatoriamente</option>
+              </select>
+            </div>
+
+            <button id="btn-deal-roles" class="btn btn-success btn-large btn-deal-action">
+              ✨ Sortear Papéis Secretos ✨
+            </button>
+          </div>
+        </div>
+
+        <!-- Secret Reveal Section (Appears after dealing) -->
+        <div id="secret-reveal-section" class="secret-reveal-section" style="display: none;">
+          <div class="reveal-instructions-card">
+            <h3>🔮 Revelação Secreta de Identidade</h3>
+            <p>Passe a tela ou o dispositivo para cada jogador. Cada pessoa deve clicar no seu cartão para ver seu papel em segredo e depois clicar em <strong>"Ocultar Papel"</strong> antes de passar para o próximo!</p>
+          </div>
+
+          <div id="secret-cards-grid" class="secret-cards-grid">
+            <!-- Injected dynamically via JS -->
+          </div>
+
+          <div class="roles-ready-actions">
+            <button id="btn-start-dream-from-roles" class="btn btn-success btn-large">
+              🌙 Todos Prontos! Iniciar o Sonho ⏱️
+            </button>
+            <button id="btn-reshuffle-roles" class="btn btn-primary">
+              🔄 Sortear Novamente
+            </button>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- =========================================================================
+         SCREEN 5: REGRAS ONÍRICAS (Tab: RULES)
+         ========================================================================= -->
+    <main id="screen-rules" class="screen">
+      <div class="rules-book-container">
+        <!-- Rules Header -->
+        <div class="rules-hero-card">
+          <div class="rules-hero-badge">🌌 Livro dos Sonhos</div>
+          <h1 class="rules-hero-title">O Ritual de When I Dream</h1>
+          <p class="rules-hero-desc">
+            A noite cai, o Sonhador adormece e coloca sua venda nos olhos... Ao redor de sua cama, espíritos sussurram pistas numa dança etérea entre a verdade, o engano e o equilíbrio cósmico.
+          </p>
+        </div>
+
+        <!-- Characters Guide -->
+        <div class="rules-section-card">
+          <h2 class="rules-section-title">🎭 Os Quatro Espíritos do Sonho</h2>
+          
+          <div class="roles-guide-grid">
+            <!-- Fada -->
+            <div class="role-guide-item role-fairy">
+              <div class="role-guide-header">
+                <span class="role-guide-icon">🧚‍♀️</span>
+                <div>
+                  <h3 class="role-guide-name">As Fadas</h3>
+                  <span class="role-guide-alignment">Luz & Verdade</span>
+                </div>
+              </div>
+              <p class="role-guide-text">
+                Desejam que o Sonhador viva um sonho belo e lúcido. Suas pistas são <strong>verdadeiras e precisas</strong> para ajudá-lo a decifrar a palavra da carta.
+              </p>
+              <div class="role-guide-goal">
+                <strong>🎯 Pontuação:</strong> Ganham 1 ponto por cada carta que o Sonhador acertar.
+              </div>
+            </div>
+
+            <!-- Bicho-Papão -->
+            <div class="role-guide-item role-boogeyman">
+              <div class="role-guide-header">
+                <span class="role-guide-icon">👹</span>
+                <div>
+                  <h3 class="role-guide-name">Os Bichos-Papões</h3>
+                  <span class="role-guide-alignment">Trevas & Confusão</span>
+                </div>
+              </div>
+              <p class="role-guide-text">
+                Desejam transformar o sonho em um pesadelo confuso. Suas pistas são <strong>falsas, ambíguas ou enganosas</strong> para induzir o Sonhador ao erro sem levantar suspeitas.
+              </p>
+              <div class="role-guide-goal">
+                <strong>🎯 Pontuação:</strong> Ganham 1 ponto por cada carta que o Sonhador errar.
+              </div>
+            </div>
+
+            <!-- Sandman -->
+            <div class="role-guide-item role-sandman">
+              <div class="role-guide-header">
+                <span class="role-guide-icon">⏳</span>
+                <div>
+                  <h3 class="role-guide-name">Os Sandmen</h3>
+                  <span class="role-guide-alignment">Equilíbrio Supremo</span>
+                </div>
+              </div>
+              <p class="role-guide-text">
+                São os tecelões do destino. Não desejam nem pura luz nem puras trevas, ajustando suas pistas para manter a balança entre <strong>acertos e erros exatamente empatada</strong>.
+              </p>
+              <div class="role-guide-goal">
+                <strong>🎯 Pontuação:</strong> Ganham pontos se o número de acertos e erros for igual (com +2 bônus de empate) ou diferença de 1.
+              </div>
+            </div>
+
+            <!-- Sonhador -->
+            <div class="role-guide-item role-dreamer">
+              <div class="role-guide-header">
+                <span class="role-guide-icon">🌙</span>
+                <div>
+                  <h3 class="role-guide-name">O Sonhador</h3>
+                  <span class="role-guide-alignment">O Viajante Cego</span>
+                </div>
+              </div>
+              <p class="role-guide-text">
+                Coloca a máscara nos olhos. Deve ouvir atentamente uma pista por vez de cada espírito e tentar adivinhar a palavra do topo. Ao despertar, deve recitar a narrativa do seu sonho!
+              </p>
+              <div class="role-guide-goal">
+                <strong>🎯 Pontuação:</strong> Ganha 1 ponto por acerto + 2 pontos extras se lembrar de todas as cartas na história.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Phases of the Round -->
+        <div class="rules-section-card">
+          <h2 class="rules-section-title">⏱️ As Três Fases da Rodada</h2>
+          
+          <div class="rules-steps-list">
+            <div class="rule-step">
+              <div class="step-num">1</div>
+              <div class="step-content">
+                <h3>A Noite (2 minutos de Sonho)</h3>
+                <p>
+                  O Sonhador coloca a venda nos olhos e o cronômetro de 2 minutos é iniciado. Para cada carta que surge:
+                </p>
+                <ul>
+                  <li>Os espíritos dizem, em ordem horária ao redor da mesa, <strong>apenas UMA única palavra</strong> como pista.</li>
+                  <li>O Sonhador pode tentar adivinhar a qualquer momento (dizendo apenas 1 palpite por vez).</li>
+                  <li>Se acertar, a carta vai para os <strong>Acertos</strong>; se errar ou passar, vai para os <strong>Erros</strong>.</li>
+                  <li>O processo segue imediatamente para a próxima carta até o tempo zerar.</li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="rule-step">
+              <div class="step-num">2</div>
+              <div class="step-content">
+                <h3>O Despertar & A Contação do Sonho</h3>
+                <p>
+                  Quando o cronômetro zera, o Sonhador permanece com a venda nos olhos e deve <strong>narrar uma história poética ou divertida</strong> integrando todas as palavras das cartas que ele acredita ter acertado, na ordem em que sonhou.
+                </p>
+                <p style="color: var(--accent-gold); margin-top: 0.35rem;">
+                  ✨ <em>Se conseguir incluir todas as cartas acertadas na sua narrativa, o Sonhador conquista +2 pontos extras de bônus!</em>
+                </p>
+              </div>
+            </div>
+
+            <div class="rule-step">
+              <div class="step-num">3</div>
+              <div class="step-content">
+                <h3>A Revelação dos Espíritos & Pontuação</h3>
+                <p>
+                  Todos os espíritos viram suas cartas secretas e revelam quem eram. O Sonhador confere a galeria do resumo para validar os acertos e todos somam seus pontos da rodada.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Clue Laws -->
+        <div class="rules-section-card">
+          <h2 class="rules-section-title">📜 As Leis Sagradas das Pistas</h2>
+          <div class="rules-laws-grid">
+            <div class="law-box law-allowed">
+              <h3>✅ O que é Permitido</h3>
+              <ul>
+                <li>Dizer exatamente <strong>uma única palavra</strong> (substantivo, adjetivo, verbo ou advérbio).</li>
+                <li>Palavras compostas hifenizadas consagradas (ex: <em>guarda-chuva</em>, <em>beija-flor</em>).</li>
+                <li>Nomes próprios simples se for uma só palavra (ex: <em>Brasil</em>, <em>Einstein</em>).</li>
+              </ul>
+            </div>
+
+            <div class="law-box law-forbidden">
+              <h3>❌ O que é Estritamente Proibido</h3>
+              <ul>
+                <li>Dizer duas ou mais palavras (ex: <em>"carro veloz"</em> ou <em>"não é gato"</em> são proibidos).</li>
+                <li>Dizer a própria palavra ou parte dela (ex: se a palavra for <em>"Cavaleiro"</em>, proibido dizer <em>"Cavalo"</em>).</li>
+                <li>Traduções diretas da palavra para outro idioma.</li>
+                <li>Gesticular, fazer barulhos corporais ou entonações teatrais para denunciar intenção.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- Official Role Distribution Table -->
+        <div class="rules-section-card">
+          <h2 class="rules-section-title">📊 Tabela Oficial de Distribuição de Papéis</h2>
+          <p style="color: var(--text-secondary); margin-bottom: 1rem;">
+            O baralho de espíritos contém 11 cartas (5 Fadas, 4 Bichos-Papões e 2 Sandmen). Em cada rodada, separa-se o número de cartas igual ao total de jogadores. 1 jogador é o Sonhador, cada outro jogador recebe 1 espírito e <strong>1 carta de espírito permanece oculta no centro</strong>, gerando mistério!
+          </p>
+
+          <div class="table-responsive">
+            <table class="rules-table">
+              <thead>
+                <tr>
+                  <th>Jogadores</th>
+                  <th>Sonhador</th>
+                  <th>🧚‍♀️ Fadas</th>
+                  <th>👹 Bichos-Papões</th>
+                  <th>⏳ Sandmen</th>
+                  <th>Total no Baralho de Espíritos</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>4 Jogadores</strong></td>
+                  <td>1</td>
+                  <td>1</td>
+                  <td>1</td>
+                  <td>2</td>
+                  <td>4 cartas (1 oculta + 3 distribuídas)</td>
+                </tr>
+                <tr>
+                  <td><strong>5 Jogadores</strong></td>
+                  <td>1</td>
+                  <td>2</td>
+                  <td>1</td>
+                  <td>2</td>
+                  <td>5 cartas (1 oculta + 4 distribuídas)</td>
+                </tr>
+                <tr>
+                  <td><strong>6 Jogadores</strong></td>
+                  <td>1</td>
+                  <td>3</td>
+                  <td>2</td>
+                  <td>1</td>
+                  <td>6 cartas (1 oculta + 5 distribuídas)</td>
+                </tr>
+                <tr>
+                  <td><strong>7 Jogadores</strong></td>
+                  <td>1</td>
+                  <td>3</td>
+                  <td>2</td>
+                  <td>2</td>
+                  <td>7 cartas (1 oculta + 6 distribuídas)</td>
+                </tr>
+                <tr>
+                  <td><strong>8 Jogadores</strong></td>
+                  <td>1</td>
+                  <td>4</td>
+                  <td>3</td>
+                  <td>1</td>
+                  <td>8 cartas (1 oculta + 7 distribuídas)</td>
+                </tr>
+                <tr>
+                  <td><strong>9 Jogadores</strong></td>
+                  <td>1</td>
+                  <td>4</td>
+                  <td>3</td>
+                  <td>2</td>
+                  <td>9 cartas (1 oculta + 8 distribuídas)</td>
+                </tr>
+                <tr>
+                  <td><strong>10 Jogadores</strong></td>
+                  <td>1</td>
+                  <td>5</td>
+                  <td>4</td>
+                  <td>1</td>
+                  <td>10 cartas (1 oculta + 9 distribuídas)</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Footer Shortcuts Info -->
+    <footer class="keyboard-shortcuts-bar">
+      <div class="shortcut-item"><kbd class="kbd">D</kbd> ou <kbd class="kbd">→</kbd> Acertou</div>
+      <div class="shortcut-item"><kbd class="kbd">A</kbd> ou <kbd class="kbd">←</kbd> Errou / Passou</div>
+      <div class="shortcut-item"><kbd class="kbd">P</kbd> Pausar</div>
+      <div class="shortcut-item"><kbd class="kbd">M</kbd> Som</div>
+      <div class="shortcut-item"><kbd class="kbd">F</kbd> Tela Cheia</div>
+    </footer>
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/cards-data.js"></script>
+  <script src="js/audio.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
