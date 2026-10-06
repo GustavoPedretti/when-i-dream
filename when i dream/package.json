@@ -1,18 +1,12 @@
 {
   "name": "when-i-dream",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "When I Dream Web Application",
+  "main": "index.html",
   "scripts": {
-    "build": "echo 'Building static site'",
-    "start": "node server.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node server.js"
   },
   "keywords": [],
   "author": "",
-  "license": "ISC",
-  "dependencies": {
-    "pdf-lib": "^1.17.1",
-    "sharp": "^0.35.4"
-  }
+  "license": "ISC"
 }
