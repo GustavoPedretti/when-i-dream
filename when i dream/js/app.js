@@ -550,7 +550,7 @@ class WhenIDreamApp {
 
     // Populate dropdown
     const selectedVal = this.selectSonhador.value;
-    this.selectSonhador.innerHTML = `<option value="RANDOM">🎲 Sortear Aleatoriamente</option>`;
+    this.selectSonhador.innerHTML = '';
     this.players.forEach(p => {
       const opt = document.createElement('option');
       opt.value = p;
@@ -637,13 +637,13 @@ class WhenIDreamApp {
 
     const dist = ROLE_DISTRIBUTIONS[count];
 
-    // 1. Choose Sonhador
+    // 1. Choose Sonhador (seleção direta do jogador escolhido)
     let sonhadorIndex = 0;
     const selectedSonhador = this.selectSonhador.value;
-    if (selectedSonhador === 'RANDOM' || !this.players.includes(selectedSonhador)) {
-      sonhadorIndex = Math.floor(Math.random() * this.players.length);
-    } else {
+    if (this.players.includes(selectedSonhador)) {
       sonhadorIndex = this.players.indexOf(selectedSonhador);
+    } else {
+      sonhadorIndex = 0;
     }
 
     // 2. Build Spirit Deck according to official distribution
